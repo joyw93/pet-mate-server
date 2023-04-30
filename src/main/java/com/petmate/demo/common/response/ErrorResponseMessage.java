@@ -1,4 +1,4 @@
-package com.petmate.demo.base.response;
+package com.petmate.demo.common.response;
 
 public class ErrorResponseMessage {
     public static final String INTERNAL_SERVER_ERROR = "서버 내부에러 발생";

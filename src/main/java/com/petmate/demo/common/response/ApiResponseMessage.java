@@ -1,4 +1,4 @@
-package com.petmate.demo.base.response;
+package com.petmate.demo.common.response;
 
 public class ApiResponseMessage {
     public static final String LOGIN_SUCCESS = "로그인 성공";

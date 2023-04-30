@@ -1,4 +1,4 @@
-package com.petmate.demo.dto.user;
+package com.petmate.demo.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,9 +1,9 @@
-package com.petmate.demo.controller;
+package com.petmate.demo.user.controller;
 
-import com.petmate.demo.base.response.ApiResponse;
-import com.petmate.demo.base.response.ApiResponseMessage;
-import com.petmate.demo.domain.service.UserService;
-import com.petmate.demo.dto.user.UserSignUpDTO;
+import com.petmate.demo.common.response.ApiResponse;
+import com.petmate.demo.common.response.ApiResponseMessage;
+import com.petmate.demo.user.service.UserService;
+import com.petmate.demo.user.dto.UserSignUpDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

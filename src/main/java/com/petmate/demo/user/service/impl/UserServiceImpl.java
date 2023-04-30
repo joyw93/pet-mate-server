@@ -1,13 +1,12 @@
-package com.petmate.demo.domain.serviceImpl;
+package com.petmate.demo.user.service.impl;
 
-import com.petmate.demo.base.exception.DuplicateValueException;
-import com.petmate.demo.base.exception.InternalServerErrorException;
-import com.petmate.demo.base.response.ErrorResponseMessage;
-import com.petmate.demo.domain.model.User;
-import com.petmate.demo.domain.repository.UserRepository;
-import com.petmate.demo.domain.service.UserService;
-import com.petmate.demo.dto.user.UserSignUpDTO;
-import com.petmate.demo.dto.user.UserResDTO;
+import com.petmate.demo.common.exception.DuplicateValueException;
+import com.petmate.demo.common.exception.InternalServerErrorException;
+import com.petmate.demo.common.response.ErrorResponseMessage;
+import com.petmate.demo.user.model.User;
+import com.petmate.demo.user.repository.UserRepository;
+import com.petmate.demo.user.dto.UserSignUpDTO;
+import com.petmate.demo.user.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 

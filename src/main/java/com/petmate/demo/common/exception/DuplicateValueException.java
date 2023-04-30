@@ -1,4 +1,4 @@
-package com.petmate.demo.base.exception;
+package com.petmate.demo.common.exception;
 
 public class DuplicateValueException extends RuntimeException {
     public DuplicateValueException(String message) {

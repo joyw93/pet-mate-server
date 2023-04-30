@@ -1,4 +1,4 @@
-package com.petmate.demo.domain.model;
+package com.petmate.demo.user.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

@@ -1,8 +1,7 @@
-package com.petmate.demo.base.response;
+package com.petmate.demo.common.response;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
 
 
 @Data

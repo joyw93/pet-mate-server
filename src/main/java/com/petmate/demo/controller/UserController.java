@@ -1,10 +1,11 @@
 package com.petmate.demo.controller;
 
-import com.petmate.demo.base.ApiResponse;
+import com.petmate.demo.base.response.ApiResponse;
+import com.petmate.demo.base.response.ApiResponseMessage;
 import com.petmate.demo.domain.service.UserService;
 import com.petmate.demo.dto.user.UserSignUpDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +19,13 @@ public class UserController {
         this.userService = userService;
     }
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> signUp(@RequestBody UserSignUpDTO userRequestDTO) {
-        Long userId = userService.signUp(userRequestDTO);
+    public ResponseEntity<ApiResponse> signUp(@Valid @RequestBody UserSignUpDTO userSignUpDTO) {
+        Long userId = userService.signUp(userSignUpDTO);
         ApiResponse apiResponse = ApiResponse.builder()
-                .status(HttpStatus.OK)
-                .message("성공했습니다.")
+                .status(HttpStatus.OK.value())
+                .message(ApiResponseMessage.CREATED_USER)
                 .data(userId)
                 .build();
-
 
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }

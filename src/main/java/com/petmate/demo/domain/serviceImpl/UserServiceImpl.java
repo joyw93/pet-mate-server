@@ -44,8 +44,4 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public UserResDTO getUser() {
-        return new UserResDTO();
-    }
 }

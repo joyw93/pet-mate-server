@@ -26,7 +26,6 @@ public class UserController {
                 .message(ApiResponseMessage.CREATED_USER)
                 .data(userId)
                 .build();
-
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 }

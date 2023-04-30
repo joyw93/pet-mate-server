@@ -8,6 +8,8 @@ import com.petmate.demo.user.repository.UserRepository;
 import com.petmate.demo.user.dto.UserSignUpDTO;
 import com.petmate.demo.user.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,16 +33,25 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateValueException(ErrorResponseMessage.NICKNAME_ALREADY_EXISTS);
         }
 
+        // 패스워드 암호화
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode(userSignUpDto.getPassword());
+
         // 새로운 사용자 생성
-        ModelMapper modelMapper = new ModelMapper();
-        User newUser = modelMapper.map(userSignUpDto, User.class);
+        User newUser = User.builder()
+                .name(userSignUpDto.getName())
+                .nickname(userSignUpDto.getNickname())
+                .email(userSignUpDto.getEmail())
+                .password(encodedPassword)
+                .build();
+
+        // 유저 저장
         try {
             User savedUser = userRepository.save(newUser);
             return savedUser.getId();
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new InternalServerErrorException(ErrorResponseMessage.USER_SIGN_UP_FAILED);
         }
     }
-
 
 }

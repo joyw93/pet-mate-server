@@ -3,12 +3,14 @@ package com.petmate.demo.user.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "users")
 public class User {
@@ -34,4 +36,5 @@ public class User {
     @Size(max=20)
     @Column(name = "phone")
     private String phone;
+
 }

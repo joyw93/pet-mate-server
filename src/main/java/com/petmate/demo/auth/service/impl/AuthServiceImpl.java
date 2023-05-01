@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public Authentication authenticate(String email, String password) {
-        UsernamePasswordAuthenticationToken authToken =
+        Authentication authToken =
                 new UsernamePasswordAuthenticationToken(email, password);
         return authenticationManager.authenticate(authToken);
     }

@@ -44,23 +44,25 @@ public class AuthController {
         } catch (AuthenticationException ex) {
             throw new UnAuthorizedException(ErrorResponseMessage.LOGIN_FAILED);
         }
-        UserDetails userDetails = authService.loadUser(userLoginDTO.getEmail());
-        request.getSession(true).setAttribute("user", userDetails);
-
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.LOGIN_SUCCESS, userDetails.getUsername()));
+//        UserDetails userDetails = authService.loadUser(userLoginDTO.getEmail());
+//        request.getSession(true).setAttribute("user", userDetails);
+//        System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
+        request.getSession(true);
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.LOGIN_SUCCESS, userName));
     }
 
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(HttpServletRequest request, HttpServletResponse response) {
-        // Invalidate the session
+        // 세션 무효화
         request.getSession().invalidate();
 
-        // Clear authentication information from the SecurityContextHolder
+        // SecurityContextHolder 인증정보 삭제
         SecurityContextHolder.getContext().setAuthentication(null);
 
-        // Delete session cookie
-        Cookie sessionCookie = new Cookie("SESSION", null);
+        // 세션쿠키 삭제
+        Cookie sessionCookie = new Cookie("JSESSIONID", null);
         sessionCookie.setHttpOnly(true);
         sessionCookie.setMaxAge(0);
         sessionCookie.setPath("/");

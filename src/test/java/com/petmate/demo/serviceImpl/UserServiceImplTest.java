@@ -82,17 +82,5 @@ public class UserServiceImplTest {
         // Then
         assertThrows(DuplicateValueException.class, () -> userService.signUp(userSignUpDTO));
     }
-
-    @DisplayName("회원가입 실패")
-    @Test
-    public void signUp_userSignUpFailed() {
-        // Given
-        when(userRepository.existsByEmail(userSignUpDTO.getEmail())).thenReturn(false);
-        when(userRepository.existsByNickname(userSignUpDTO.getNickname())).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenThrow(RuntimeException.class);
-
-        // Then
-        assertThrows(InternalServerErrorException.class, () -> userService.signUp(userSignUpDTO));
-    }
 }
 

@@ -12,4 +12,7 @@ public class ErrorResponseMessage {
     public static final String EMAIL_NOT_FOUND = "존재하지 않는 이메일입니다.";
     public static final String LOGIN_FAILED = "로그인 실패";
 
+    /** 커뮤니티 */
+    public static final String POST_FAILED = "게시물 등록 실패";
+
 }

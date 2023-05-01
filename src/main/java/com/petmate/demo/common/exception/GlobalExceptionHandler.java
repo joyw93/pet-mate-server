@@ -35,4 +35,17 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(ErrorResponseMessage.VALID_ERROR, validationErrors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<ErrorResponse> UnAuthorizedException(UnAuthorizedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), null);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEmailNotFoundException(NotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), null);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
 }

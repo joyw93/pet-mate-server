@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 
 
 @Getter
@@ -33,8 +37,7 @@ public class User {
     @Size(min=5, max=100)
     @Column(name = "password")
     private String password;
-    @Size(max=20)
-    @Column(name = "phone")
-    private String phone;
+    @Column(name = "roles")
+    private String roles;
 
 }

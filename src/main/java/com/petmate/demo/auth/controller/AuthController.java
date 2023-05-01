@@ -10,6 +10,7 @@ import com.petmate.demo.common.response.ErrorResponseMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,10 +47,13 @@ public class AuthController {
             throw new UnAuthorizedException(ErrorResponseMessage.LOGIN_FAILED);
         }
 //        UserDetails userDetails = authService.loadUser(userLoginDTO.getEmail());
-//        request.getSession(true).setAttribute("user", userDetails);
+//        request.getSession(true).setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 //        System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
-        request.getSession(true);
+//        request.getSession(true);
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+//        HttpSession session = request.getSession(true);
+//        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.LOGIN_SUCCESS, userName));
     }
 

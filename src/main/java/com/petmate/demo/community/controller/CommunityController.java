@@ -20,15 +20,14 @@ public class CommunityController {
         this.communityService = communityService;
     }
 
-    @GetMapping()
-    public void sesseionTest() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication.getName());
+    @PostMapping()
+    public String sesseionTest() {
+        return "Hello";
     }
 
-    @PostMapping()
-    public ResponseEntity<ApiResponse> createPost(@RequestBody CreatePostDTO createPostDTO) {
-        Long postId = communityService.createPost(createPostDTO);
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.POST_CREATED_SUCCESS, postId));
-    }
+//    @PostMapping()
+//    public ResponseEntity<ApiResponse> createPost(@RequestBody CreatePostDTO createPostDTO) {
+//        Long postId = communityService.createPost(createPostDTO);
+//        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.POST_CREATED_SUCCESS, postId));
+//    }
 }

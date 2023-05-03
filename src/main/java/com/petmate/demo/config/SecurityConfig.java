@@ -1,5 +1,6 @@
 package com.petmate.demo.config;
 
+import com.petmate.demo.auth.service.AuthService;
 import com.petmate.demo.auth.service.impl.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -35,52 +38,38 @@ import java.util.List;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
 
-    @Bean
-    public HttpSessionSecurityContextRepository securityContextRepository() {
-        return new HttpSessionSecurityContextRepository();
-    }
+
+    private final AuthService authService;
+    private String secretKey;
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-//                .anonymous(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new SecurityContextPersistenceFilter(securityContextRepository()), SecurityContextPersistenceFilter.class)
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .httpBasic().disable()
+                .csrf().disable()
+                .cors().disable()
                 .authorizeHttpRequests(authorize  -> authorize
-                        .requestMatchers("/login")
-                        .permitAll()
-                        .anyRequest()
-                        .permitAll()
-                )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/login")
-                        .permitAll()
+                        .requestMatchers("/api/v1/auth/login", "/api/v1/user/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
                 )
                 .logout(logout -> logout
                         .permitAll())
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(new JwtFilter(authService, "secretKey"), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
 
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(List.of(daoAuthenticationProvider));
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

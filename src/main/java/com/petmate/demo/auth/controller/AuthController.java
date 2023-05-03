@@ -40,21 +40,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody UserLoginDTO userLoginDTO, HttpServletRequest request,
                                              HttpServletResponse response) {
-        try {
-            Authentication authentication = authService.authenticate(userLoginDTO.getEmail(), userLoginDTO.getPassword());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (AuthenticationException ex) {
-            throw new UnAuthorizedException(ErrorResponseMessage.LOGIN_FAILED);
-        }
-//        UserDetails userDetails = authService.loadUser(userLoginDTO.getEmail());
-//        request.getSession(true).setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-//        System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
-//        request.getSession(true);
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-
-//        HttpSession session = request.getSession(true);
-//        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.LOGIN_SUCCESS, userName));
+//        try {
+//
+//        } catch (AuthenticationException ex) {
+//            throw new UnAuthorizedException(ErrorResponseMessage.LOGIN_FAILED);
+//        }
+//        String login = authService.login(userLoginDTO);
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.LOGIN_SUCCESS, null));
     }
 
 

@@ -1,5 +1,6 @@
 package com.petmate.demo.config;
 
+import com.petmate.demo.user.model.SecurityUser;
 import com.petmate.demo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +29,12 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
-                .map(user -> new org.springframework.security.core.userdetails.User(
-                        user.getEmail(),
-                        user.getPassword(),
-                        Collections.emptyList() // 권한 정보는 없음
-                ))
+//                .map(user -> new org.springframework.security.core.userdetails.User(
+//                        user.getEmail(),
+//                        user.getPassword(),
+//                        Collections.emptyList() // 권한 정보는 없음
+//                ))
+                .map(user -> new SecurityUser(user))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 

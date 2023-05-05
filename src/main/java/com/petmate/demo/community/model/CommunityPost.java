@@ -1,5 +1,6 @@
 package com.petmate.demo.community.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.petmate.demo.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +26,8 @@ public class CommunityPost {
     @Column(name = "content")
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 }

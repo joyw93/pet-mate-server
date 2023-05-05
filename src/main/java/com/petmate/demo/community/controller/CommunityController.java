@@ -20,9 +20,11 @@ public class CommunityController {
         this.communityService = communityService;
     }
 
-    @PostMapping()
-    public String sesseionTest() {
-        return "Hello";
+    @PostMapping("/test")
+    public ResponseEntity<String> sessionTest() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+        return ResponseEntity.ok(currentUserName);
     }
 
 //    @PostMapping()

@@ -5,16 +5,17 @@ import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
 public class JwtUtil {
 
-    private static final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final long expiredMs = 3_600_000;
-    public static String generateToken(String userName) {
+    public static String generateToken(String userName, String secretKey) {
         // 1 hour
         Claims claims = Jwts.claims();
         claims.put("userName", userName);
@@ -22,7 +23,20 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
-                .signWith(secretKey)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public static boolean validateToken(String token, String secretKey) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(secretKey.getBytes())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
     }
 }

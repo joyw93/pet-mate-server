@@ -1,10 +1,14 @@
 package com.petmate.demo.community.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.petmate.demo.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,8 +30,13 @@ public class CommunityPost {
     @Column(name = "content")
     private String content;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JsonBackReference
+    @JoinColumn(name = "author_id")
+    private User author;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<CommunityPostComment> comments = new ArrayList<>();
+
 }

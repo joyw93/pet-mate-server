@@ -1,6 +1,8 @@
 package com.petmate.demo.user.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petmate.demo.community.model.CommunityPost;
+import com.petmate.demo.community.model.CommunityPostComment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -38,7 +40,10 @@ public class User {
     private String password;
     @Column(name = "roles")
     private String roles;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<CommunityPost> communityPosts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL)
+    private List<CommunityPostComment> communityPostComments = new ArrayList<>();
 }

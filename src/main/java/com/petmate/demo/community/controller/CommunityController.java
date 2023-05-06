@@ -2,6 +2,7 @@ package com.petmate.demo.community.controller;
 
 import com.petmate.demo.common.response.ApiResponse;
 import com.petmate.demo.common.response.ApiResponseMessage;
+import com.petmate.demo.community.dto.AddCommentDTO;
 import com.petmate.demo.community.dto.CreatePostDTO;
 import com.petmate.demo.community.dto.UpdatePostDTO;
 import com.petmate.demo.community.model.CommunityPost;
@@ -50,5 +51,13 @@ public class CommunityController {
     public ResponseEntity<ApiResponse> deletePost(@PathVariable Long postId) {
         communityService.deletePost(postId);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.DELETE_SUCCESS, null));
+    }
+
+    @PostMapping("/post/{postId}/comment")
+    public ResponseEntity<ApiResponse> addComment(
+            @RequestBody AddCommentDTO addCommentDTO ,
+            @PathVariable Long postId) {
+        Long commentId = communityService.addComment(postId, addCommentDTO);
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.CREATED_SUCCESS, commentId));
     }
 }

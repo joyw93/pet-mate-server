@@ -45,5 +45,6 @@ public class User {
     private List<CommunityPost> communityPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<CommunityPostComment> communityPostComments = new ArrayList<>();
 }

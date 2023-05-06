@@ -1,5 +1,6 @@
 package com.petmate.demo.community.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.petmate.demo.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -21,11 +22,13 @@ public class CommunityPostComment {
     @Column(name = "content")
     private String content;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "post_id")
     private CommunityPost post;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "commenter_id")
     private User commenter;
 }

@@ -13,4 +13,5 @@ public interface CommunityService {
     CommunityPost updatePost(Long postId, UpdatePostDTO updatePostDTO);
     void deletePost(Long postId);
     Long addComment(Long postId, AddCommentDTO addCommentDTO);
+    CommunityPost getPost(Long postId);
 }

@@ -1,5 +1,7 @@
 package com.petmate.demo.user.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petmate.demo.community.model.CommunityPost;
 import com.petmate.demo.community.model.CommunityPostComment;
@@ -25,7 +27,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
     @NotNull
     @Column(name = "name")
     private String name;
@@ -40,11 +42,11 @@ public class User {
     private String password;
     @Column(name = "roles")
     private String roles;
+
+    @JsonBackReference
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<CommunityPost> communityPosts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<CommunityPostComment> communityPostComments = new ArrayList<>();
+//    @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL)
+//    private List<CommunityPostComment> communityPostComments = new ArrayList<>();
 }

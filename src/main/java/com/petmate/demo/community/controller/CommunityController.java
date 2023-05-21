@@ -34,7 +34,7 @@ public class CommunityController {
     }
 
     @GetMapping("/post")
-    public ResponseEntity<ApiResponse> getPosts() {
+    public ResponseEntity<ApiResponse> getAllPosts() {
         List<CommunityPost> posts = communityService.getPosts();
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_SUCCESS, posts));
     }
@@ -59,5 +59,11 @@ public class CommunityController {
             @PathVariable Long postId) {
         Long commentId = communityService.addComment(postId, addCommentDTO);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.CREATED_SUCCESS, commentId));
+    }
+
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<ApiResponse> getPost(@PathVariable Long postId) {
+        CommunityPost post = communityService.getPost(postId);
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_SUCCESS, post));
     }
 }

@@ -24,11 +24,9 @@ public class QCommunityPost extends EntityPathBase<CommunityPost> {
 
     public final com.petmate.demo.user.model.QUser author;
 
-    public final ListPath<CommunityPostComment, QCommunityPostComment> comments = this.<CommunityPostComment, QCommunityPostComment>createList("comments", CommunityPostComment.class, QCommunityPostComment.class, PathInits.DIRECT2);
-
     public final StringPath content = createString("content");
 
-    public final NumberPath<Long> Id = createNumber("Id", Long.class);
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath title = createString("title");
 

@@ -12,6 +12,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -52,6 +54,11 @@ public class UserServiceImpl implements UserService {
         } catch (DataAccessException e) {
             throw new InternalServerErrorException(ErrorResponseMessage.USER_SIGN_UP_FAILED);
         }
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 
 }

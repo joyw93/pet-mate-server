@@ -13,16 +13,17 @@ import com.petmate.demo.community.model.QCommunityPostComment;
 import com.petmate.demo.community.repository.CommunityCommentRepository;
 import com.petmate.demo.community.repository.CommunityRepository;
 import com.petmate.demo.community.service.CommunityService;
+import com.petmate.demo.user.model.QUser;
 import com.petmate.demo.user.model.User;
 import com.petmate.demo.user.repository.UserRepository;
 import com.petmate.demo.utils.SecurityUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -61,11 +62,14 @@ public class CommunityServiceImpl implements CommunityService {
     public List<CommunityPost> getPosts() {
         QCommunityPost post = QCommunityPost.communityPost;
         QCommunityPostComment comment = QCommunityPostComment.communityPostComment;
+        QUser author = QUser.user;
         List<CommunityPost> posts =  queryFactory
                 .selectFrom(post)
-                .leftJoin(post.comments, comment)
+                .leftJoin(post.author, author)
                 .distinct()
+                .fetchJoin()
                 .fetch();
+//        List<CommunityPost> posts = communityRepository.findAll();
         return posts;
     }
 
@@ -126,6 +130,21 @@ public class CommunityServiceImpl implements CommunityService {
         } catch (DataAccessException e) {
             throw new InternalServerErrorException(ErrorResponseMessage.POST_FAILED);
         }
+    }
+
+    @Override
+    public CommunityPost getPost(Long postId) {
+//        QUser userQuery = QUser.user;
+        QCommunityPost postQuery = QCommunityPost.communityPost;
+//        QCommunityPostComment commentQuery = QCommunityPostComment.communityPostComment;
+//        CommunityPost post = queryFactory
+//                .selectFrom(postQuery)
+//                .where(postQuery.id.eq(postId))
+//                .distinct()
+//                .fetchOne();
+//        return post;
+        CommunityPost post = communityRepository.findById(postId).orElseThrow();
+        return post;
     }
 
 }

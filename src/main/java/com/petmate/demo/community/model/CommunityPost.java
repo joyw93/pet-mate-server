@@ -21,7 +21,7 @@ import java.util.List;
 public class CommunityPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @NotNull
     @Column(name = "title")
@@ -31,13 +31,12 @@ public class CommunityPost {
     @Column(name = "content")
     private String content;
 
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
     @JoinColumn(name = "author_id")
     private User author;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<CommunityPostComment> comments = new ArrayList<>();
+//    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+//    private List<CommunityPostComment> comments = new ArrayList<>();
 
 }

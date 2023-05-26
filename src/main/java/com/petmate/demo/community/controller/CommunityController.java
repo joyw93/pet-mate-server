@@ -3,6 +3,7 @@ package com.petmate.demo.community.controller;
 import com.petmate.demo.common.response.ApiResponse;
 import com.petmate.demo.common.response.ApiResponseMessage;
 import com.petmate.demo.community.dto.AddCommentDTO;
+import com.petmate.demo.community.dto.CommunityPostResponseDTO;
 import com.petmate.demo.community.dto.CreatePostDTO;
 import com.petmate.demo.community.dto.UpdatePostDTO;
 import com.petmate.demo.community.model.CommunityPost;
@@ -35,7 +36,7 @@ public class CommunityController {
 
     @GetMapping("/post")
     public ResponseEntity<ApiResponse> getAllPosts() {
-        List<CommunityPost> posts = communityService.getPosts();
+        List<CommunityPostResponseDTO> posts = communityService.getPosts();
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_SUCCESS, posts));
     }
 

@@ -3,9 +3,7 @@ import com.petmate.demo.common.exception.InternalServerErrorException;
 import com.petmate.demo.common.exception.NotFoundException;
 import com.petmate.demo.common.exception.UnAuthorizedException;
 import com.petmate.demo.common.response.ErrorResponseMessage;
-import com.petmate.demo.community.dto.AddCommentDTO;
-import com.petmate.demo.community.dto.CreatePostDTO;
-import com.petmate.demo.community.dto.UpdatePostDTO;
+import com.petmate.demo.community.dto.*;
 import com.petmate.demo.community.model.CommunityPost;
 import com.petmate.demo.community.model.CommunityPostComment;
 import com.petmate.demo.community.model.QCommunityPost;
@@ -17,6 +15,8 @@ import com.petmate.demo.user.model.QUser;
 import com.petmate.demo.user.model.User;
 import com.petmate.demo.user.repository.UserRepository;
 import com.petmate.demo.utils.SecurityUtil;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -40,8 +40,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final UserRepository userRepository;
     @Override
     public Long createPost(CreatePostDTO createPostDTO) {
-        Long currentUserId = SecurityUtil.getCurrentUserId()
-                .orElseThrow(()->new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS));
+        Long currentUserId = SecurityUtil.getCurrentUserId();
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(()->new UnAuthorizedException(ErrorResponseMessage.USER_NOT_FOUND));
         CommunityPost newPost = CommunityPost.builder()
@@ -59,24 +58,35 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public List<CommunityPost> getPosts() {
+    public List<CommunityPostResponseDTO> getPosts() {
         QCommunityPost post = QCommunityPost.communityPost;
-        QCommunityPostComment comment = QCommunityPostComment.communityPostComment;
+        QCommunityPostComment comments = QCommunityPostComment.communityPostComment;
         QUser author = QUser.user;
-        List<CommunityPost> posts =  queryFactory
-                .selectFrom(post)
+        List<CommunityPostResponseDTO> posts =  queryFactory
+                .select(Projections.constructor(
+                        CommunityPostResponseDTO.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        Projections.constructor(
+                                AuthorDTO.class,
+                                author.id
+                        ),
+                        JPAExpressions
+                                .select(comments.count())
+                                .from(comments)
+                                .where(comments.post.eq(post))
+                ))
+                .from(post)
                 .leftJoin(post.author, author)
                 .distinct()
-                .fetchJoin()
                 .fetch();
-//        List<CommunityPost> posts = communityRepository.findAll();
         return posts;
     }
 
     @Override
     public CommunityPost updatePost(Long postId, UpdatePostDTO updatePostDTO) {
-        Long currentUserId = SecurityUtil.getCurrentUserId()
-                .orElseThrow(()->new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS));
+        Long currentUserId = SecurityUtil.getCurrentUserId();
         CommunityPost oldPost = communityRepository.findById(postId)
                 .orElseThrow(()->new NotFoundException(ErrorResponseMessage.POST_NOT_FOUND));
 
@@ -93,15 +103,13 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public void deletePost(Long postId) {
-        Long currentUserId = SecurityUtil.getCurrentUserId()
-                .orElseThrow(()->new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS));
+        Long currentUserId = SecurityUtil.getCurrentUserId();
         CommunityPost oldPost = communityRepository.findById(postId)
                 .orElseThrow(()->new NotFoundException(ErrorResponseMessage.POST_NOT_FOUND));
 
         if(!Objects.equals(oldPost.getAuthor().getId(), currentUserId)) {
             throw new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS);
         }
-
         try {
             communityRepository.deleteById(postId);
         } catch (EmptyResultDataAccessException ex) {
@@ -113,8 +121,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public Long addComment(Long postId, AddCommentDTO addCommentDTO) {
-        Long currentUserId = SecurityUtil.getCurrentUserId()
-                .orElseThrow(()->new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS));
+        Long currentUserId = SecurityUtil.getCurrentUserId();
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(()->new UnAuthorizedException(ErrorResponseMessage.USER_NOT_FOUND));
         CommunityPost post = communityRepository.findById(postId)

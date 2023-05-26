@@ -1,5 +1,7 @@
 package com.petmate.demo.utils;
 
+import com.petmate.demo.common.exception.UnAuthorizedException;
+import com.petmate.demo.common.response.ErrorResponseMessage;
 import com.petmate.demo.user.model.SecurityUser;
 import com.petmate.demo.user.model.User;
 import org.springframework.security.core.Authentication;
@@ -11,16 +13,16 @@ import java.util.Optional;
 @Component
 public class SecurityUtil {
 
-    public static Optional<Long> getCurrentUserId() {
+    public static Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            return Optional.empty();
+            throw new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS);
         }
         Object principal = authentication.getPrincipal();
         if (principal instanceof SecurityUser user) {
-            return Optional.of(user.getId());
+            return user.getId();
         }
-        return Optional.empty();
+        throw new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS);
     }
 
 }

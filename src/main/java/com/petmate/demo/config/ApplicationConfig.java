@@ -28,12 +28,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-//                .map(user -> new org.springframework.security.core.userdetails.User(
-//                        user.getEmail(),
-//                        user.getPassword(),
-//                        Collections.emptyList() // 권한 정보는 없음
-//                ))
+        return userEmail -> userRepository.findByEmail(userEmail)
                 .map(user -> new SecurityUser(user))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }

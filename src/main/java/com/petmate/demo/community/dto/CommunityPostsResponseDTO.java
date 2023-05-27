@@ -1,15 +1,17 @@
 package com.petmate.demo.community.dto;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorDTO {
+public class CommunityPostsResponseDTO {
     private Long id;
-    private String nickname;
-
+    private String title;
+    private String content;
+    private AuthorDTO author;
+    private Long commentCount;
 }
+
+

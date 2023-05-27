@@ -42,11 +42,9 @@ public class User {
     private String password;
     @Column(name = "roles")
     private String roles;
-
     @JsonBackReference
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<CommunityPost> communityPosts = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL)
-//    private List<CommunityPostComment> communityPostComments = new ArrayList<>();
+    @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL)
+    private List<CommunityPostComment> communityPostComments = new ArrayList<>();
 }

@@ -20,6 +20,8 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
+    public final ListPath<com.petmate.demo.community.model.CommunityPostComment, com.petmate.demo.community.model.QCommunityPostComment> communityPostComments = this.<com.petmate.demo.community.model.CommunityPostComment, com.petmate.demo.community.model.QCommunityPostComment>createList("communityPostComments", com.petmate.demo.community.model.CommunityPostComment.class, com.petmate.demo.community.model.QCommunityPostComment.class, PathInits.DIRECT2);
+
     public final ListPath<com.petmate.demo.community.model.CommunityPost, com.petmate.demo.community.model.QCommunityPost> communityPosts = this.<com.petmate.demo.community.model.CommunityPost, com.petmate.demo.community.model.QCommunityPost>createList("communityPosts", com.petmate.demo.community.model.CommunityPost.class, com.petmate.demo.community.model.QCommunityPost.class, PathInits.DIRECT2);
 
     public final StringPath email = createString("email");

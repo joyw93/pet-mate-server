@@ -11,7 +11,6 @@ import java.util.Collections;
 @Data
 public class SecurityUser implements UserDetails {
 
-
     private Long id;
     private String username;
     private String password;

@@ -23,12 +23,10 @@ public class CommunityPostComment {
     @Column(name = "content")
     private String content;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private CommunityPost post;
-//
-    @JsonIgnore
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "commenter_id")
     private User commenter;

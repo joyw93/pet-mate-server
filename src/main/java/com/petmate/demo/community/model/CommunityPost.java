@@ -36,7 +36,7 @@ public class CommunityPost {
     @JoinColumn(name = "author_id")
     private User author;
 
-//    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-//    private List<CommunityPostComment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<CommunityPostComment> comments = new ArrayList<>();
 
 }

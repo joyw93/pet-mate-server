@@ -2,24 +2,14 @@ package com.petmate.demo.community.controller;
 
 import com.petmate.demo.common.response.ApiResponse;
 import com.petmate.demo.common.response.ApiResponseMessage;
-import com.petmate.demo.community.dto.AddCommentDTO;
-import com.petmate.demo.community.dto.CommunityPostResponseDTO;
-import com.petmate.demo.community.dto.CreatePostDTO;
-import com.petmate.demo.community.dto.UpdatePostDTO;
+import com.petmate.demo.community.dto.*;
 import com.petmate.demo.community.model.CommunityPost;
 import com.petmate.demo.community.service.CommunityService;
-import com.petmate.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,7 +26,7 @@ public class CommunityController {
 
     @GetMapping("/post")
     public ResponseEntity<ApiResponse> getAllPosts() {
-        List<CommunityPostResponseDTO> posts = communityService.getPosts();
+        List<CommunityPostsResponseDTO> posts = communityService.getPosts();
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_SUCCESS, posts));
     }
 
@@ -45,7 +35,7 @@ public class CommunityController {
             @RequestBody UpdatePostDTO updatePostDTO ,
             @PathVariable Long postId) {
         CommunityPost newPost = communityService.updatePost(postId, updatePostDTO);
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.UPDATE_SUCCESS, newPost));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.UPDATE_SUCCESS, newPost.getId()));
     }
 
     @DeleteMapping("/post/{postId}")
@@ -64,7 +54,7 @@ public class CommunityController {
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<ApiResponse> getPost(@PathVariable Long postId) {
-        CommunityPost post = communityService.getPost(postId);
+        CommunityPostResponseDTO post = communityService.getPost(postId);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_SUCCESS, post));
     }
 }

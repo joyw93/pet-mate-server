@@ -38,3 +38,4 @@ out/
 
 ### 프로퍼티 ###
 application-aws.properties
+application.properties

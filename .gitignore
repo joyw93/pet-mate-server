@@ -37,5 +37,4 @@ out/
 .vscode/
 
 ### 프로퍼티 ###
-application.properties
-properties
+application-aws.properties

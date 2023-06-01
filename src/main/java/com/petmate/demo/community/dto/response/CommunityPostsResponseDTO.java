@@ -1,9 +1,8 @@
-package com.petmate.demo.community.dto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package com.petmate.demo.community.dto.response;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommunityPostsResponseDTO {

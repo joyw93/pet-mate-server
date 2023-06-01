@@ -1,4 +1,4 @@
-package com.petmate.demo.community.dto;
+package com.petmate.demo.community.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

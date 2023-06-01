@@ -1,15 +1,15 @@
-package com.petmate.demo.community.dto;
+package com.petmate.demo.community.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
-public class AuthorDTO {
+@NoArgsConstructor
+public class CommenterDTO {
     private Long id;
     private String nickname;
-
 }

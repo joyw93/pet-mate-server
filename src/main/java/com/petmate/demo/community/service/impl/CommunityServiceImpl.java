@@ -3,20 +3,19 @@ import com.petmate.demo.common.exception.InternalServerErrorException;
 import com.petmate.demo.common.exception.NotFoundException;
 import com.petmate.demo.common.exception.UnAuthorizedException;
 import com.petmate.demo.common.response.ErrorResponseMessage;
-import com.petmate.demo.community.dto.*;
+import com.petmate.demo.community.dto.request.AddCommentDTO;
+import com.petmate.demo.community.dto.request.CreatePostDTO;
+import com.petmate.demo.community.dto.request.UpdatePostDTO;
+import com.petmate.demo.community.dto.response.*;
 import com.petmate.demo.community.model.CommunityPost;
 import com.petmate.demo.community.model.CommunityPostComment;
-import com.petmate.demo.community.model.QCommunityPost;
 import com.petmate.demo.community.model.QCommunityPostComment;
-import com.petmate.demo.community.repository.CommunityCommentRepository;
 import com.petmate.demo.community.repository.CommunityRepository;
 import com.petmate.demo.community.service.CommunityService;
 import com.petmate.demo.user.model.QUser;
 import com.petmate.demo.user.model.User;
-import com.petmate.demo.user.repository.UserRepository;
 import com.petmate.demo.utils.SecurityUtil;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -24,10 +23,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.querydsl.core.types.Projections.list;
 
 @RequiredArgsConstructor
 @Transactional
@@ -36,18 +35,20 @@ public class CommunityServiceImpl implements CommunityService {
 
     private final JPAQueryFactory queryFactory;
     private final CommunityRepository communityRepository;
-    private final CommunityCommentRepository communityCommentRepository;
-    private final UserRepository userRepository;
     @Override
     public Long createPost(CreatePostDTO createPostDTO) {
         User currentUser = SecurityUtil.getCurrentUser();
-        CommunityPost newPost = CommunityPost.builder()
+        CommunityPost post = CommunityPost.builder()
                 .title(createPostDTO.getTitle())
                 .content(createPostDTO.getContent())
                 .author(currentUser)
                 .build();
+
+        MultipartFile[] multipartFiles = createPostDTO.getFiles();
+        
+
         try {
-            CommunityPost createdPost = communityRepository.save(newPost);
+            CommunityPost createdPost = communityRepository.save(post);
             return createdPost.getId();
         } catch (DataAccessException e) {
             throw new InternalServerErrorException(ErrorResponseMessage.POST_FAILED);
@@ -57,37 +58,14 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public List<CommunityPostsResponseDTO> getPosts() {
-        QCommunityPost post = QCommunityPost.communityPost;
-        QCommunityPostComment comments = QCommunityPostComment.communityPostComment;
-        QUser author = QUser.user;
-        List<CommunityPostsResponseDTO> communityPostsResponseDTOS = queryFactory
-                .select(Projections.constructor(
-                        CommunityPostsResponseDTO.class,
-                        post.id,
-                        post.title,
-                        post.content,
-                        Projections.constructor(
-                                AuthorDTO.class,
-                                author.id,
-                                author.nickname
-                        ),
-                        JPAExpressions
-                                .select(comments.count())
-                                .from(comments)
-                                .where(comments.post.eq(post))
-                ))
-                .from(post)
-                .leftJoin(post.author, author)
-                .distinct()
-                .fetch();
-        return communityPostsResponseDTOS;
+        return communityRepository.findAllPosts();
     }
 
     @Override
     public CommunityPost updatePost(Long postId, UpdatePostDTO updatePostDTO) {
-        Long currentUserId = SecurityUtil.getCurrentUserId();
         CommunityPost post = communityRepository.findById(postId)
                 .orElseThrow(()->new NotFoundException(ErrorResponseMessage.POST_NOT_FOUND));
+        Long currentUserId = SecurityUtil.getCurrentUserId();
         if (!currentUserId.equals(post.getAuthor().getId())) {
             throw new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS);
         }
@@ -98,9 +76,9 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public void deletePost(Long postId) {
-        Long currentUserId = SecurityUtil.getCurrentUserId();
         CommunityPost post = communityRepository.findById(postId)
                 .orElseThrow(()->new NotFoundException(ErrorResponseMessage.POST_NOT_FOUND));
+        Long currentUserId = SecurityUtil.getCurrentUserId();
         if (!currentUserId.equals(post.getAuthor().getId())) {
             throw new UnAuthorizedException(ErrorResponseMessage.UNAUTHORIZED_ACCESS);
         }
@@ -115,17 +93,20 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public Long addComment(Long postId, AddCommentDTO addCommentDTO) {
-        User currentUser = SecurityUtil.getCurrentUser();
         CommunityPost post = communityRepository.findById(postId)
                 .orElseThrow(()->new NotFoundException(ErrorResponseMessage.POST_NOT_FOUND));
-        CommunityPostComment comment = CommunityPostComment.builder()
-                .commenter(currentUser)
-                .post(post)
-                .content(addCommentDTO.getContent())
-                .build();
+        User currentUser = SecurityUtil.getCurrentUser();
+
+        CommunityPostComment comment = new CommunityPostComment();
+        comment.setCommenter(currentUser);
+        comment.setContent(addCommentDTO.getContent());
+        comment.setPost(post);
+
+        post.getComments().add(comment);
+
         try {
-            CommunityPostComment addedComment = communityCommentRepository.save(comment);
-            return addedComment.getId();
+            CommunityPost PostAddedComment = communityRepository.save(post);
+            return PostAddedComment.getId();
         } catch (DataAccessException e) {
             throw new InternalServerErrorException(ErrorResponseMessage.POST_FAILED);
         }
@@ -133,27 +114,10 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public CommunityPostResponseDTO getPost(Long postId) {
-        QCommunityPostComment comment = QCommunityPostComment.communityPostComment;
-
         CommunityPost communityPost = communityRepository.findById(postId)
                 .orElseThrow(()->new NotFoundException(ErrorResponseMessage.POST_NOT_FOUND));
 
-        List<CommentDTO> comments = queryFactory
-                .select(Projections.constructor(
-                        CommentDTO.class,
-                        comment.id,
-                        comment.content,
-                        Projections.constructor(
-                                CommenterDTO.class,
-                                comment.commenter.id,
-                                comment.commenter.nickname
-                        )
-                ))
-                .from(comment)
-                .leftJoin(comment.commenter, QUser.user)
-                .where(comment.post.id.eq(postId))
-                .distinct()
-                .fetch();
+        List<CommentDTO> comments = communityRepository.findCommentsByPostId(postId);
 
         AuthorDTO authorDTO = new AuthorDTO();
         authorDTO.setId(communityPost.getAuthor().getId());

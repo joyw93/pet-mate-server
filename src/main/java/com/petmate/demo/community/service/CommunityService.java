@@ -1,6 +1,10 @@
 package com.petmate.demo.community.service;
 
-import com.petmate.demo.community.dto.*;
+import com.petmate.demo.community.dto.request.AddCommentDTO;
+import com.petmate.demo.community.dto.request.CreatePostDTO;
+import com.petmate.demo.community.dto.request.UpdatePostDTO;
+import com.petmate.demo.community.dto.response.CommunityPostResponseDTO;
+import com.petmate.demo.community.dto.response.CommunityPostsResponseDTO;
 import com.petmate.demo.community.model.CommunityPost;
 
 import java.util.List;

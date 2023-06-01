@@ -1,8 +1,10 @@
 package com.petmate.demo.community.service.impl;
+import com.amazonaws.services.s3.AmazonS3;
 import com.petmate.demo.common.exception.InternalServerErrorException;
 import com.petmate.demo.common.exception.NotFoundException;
 import com.petmate.demo.common.exception.UnAuthorizedException;
 import com.petmate.demo.common.response.ErrorResponseMessage;
+import com.petmate.demo.common.service.CommonService;
 import com.petmate.demo.community.dto.request.AddCommentDTO;
 import com.petmate.demo.community.dto.request.CreatePostDTO;
 import com.petmate.demo.community.dto.request.UpdatePostDTO;
@@ -18,6 +20,7 @@ import com.petmate.demo.utils.SecurityUtil;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -33,10 +37,13 @@ import java.util.List;
 @Service
 public class CommunityServiceImpl implements CommunityService {
 
+    private final CommonService commonService;
     private final JPAQueryFactory queryFactory;
     private final CommunityRepository communityRepository;
+
+
     @Override
-    public Long createPost(CreatePostDTO createPostDTO) {
+    public Long createPost(CreatePostDTO createPostDTO) throws IOException {
         User currentUser = SecurityUtil.getCurrentUser();
         CommunityPost post = CommunityPost.builder()
                 .title(createPostDTO.getTitle())
@@ -45,10 +52,10 @@ public class CommunityServiceImpl implements CommunityService {
                 .build();
 
         MultipartFile[] multipartFiles = createPostDTO.getFiles();
-        
 
         try {
             CommunityPost createdPost = communityRepository.save(post);
+            String imgUrl = commonService.uploadFile(multipartFiles);
             return createdPost.getId();
         } catch (DataAccessException e) {
             throw new InternalServerErrorException(ErrorResponseMessage.POST_FAILED);

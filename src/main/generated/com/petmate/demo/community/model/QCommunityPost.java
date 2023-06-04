@@ -30,6 +30,8 @@ public class QCommunityPost extends EntityPathBase<CommunityPost> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final ListPath<CommunityPostImage, QCommunityPostImage> images = this.<CommunityPostImage, QCommunityPostImage>createList("images", CommunityPostImage.class, QCommunityPostImage.class, PathInits.DIRECT2);
+
     public final StringPath title = createString("title");
 
     public QCommunityPost(String variable) {

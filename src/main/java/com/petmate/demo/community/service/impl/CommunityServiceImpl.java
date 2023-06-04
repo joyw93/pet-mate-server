@@ -11,6 +11,7 @@ import com.petmate.demo.community.dto.request.UpdatePostDTO;
 import com.petmate.demo.community.dto.response.*;
 import com.petmate.demo.community.model.CommunityPost;
 import com.petmate.demo.community.model.CommunityPostComment;
+import com.petmate.demo.community.model.CommunityPostImage;
 import com.petmate.demo.community.model.QCommunityPostComment;
 import com.petmate.demo.community.repository.CommunityRepository;
 import com.petmate.demo.community.service.CommunityService;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,24 +40,30 @@ import java.util.List;
 public class CommunityServiceImpl implements CommunityService {
 
     private final CommonService commonService;
-    private final JPAQueryFactory queryFactory;
     private final CommunityRepository communityRepository;
 
 
     @Override
     public Long createPost(CreatePostDTO createPostDTO) throws IOException {
         User currentUser = SecurityUtil.getCurrentUser();
-        CommunityPost post = CommunityPost.builder()
-                .title(createPostDTO.getTitle())
-                .content(createPostDTO.getContent())
-                .author(currentUser)
-                .build();
 
-        MultipartFile[] multipartFiles = createPostDTO.getFiles();
+        MultipartFile[] imageFiles = createPostDTO.getFiles();
+        List<String> imgUrls = commonService.uploadFile(imageFiles);
+
+        CommunityPost post = new CommunityPost();
+        post.setTitle(createPostDTO.getTitle());
+        post.setContent(createPostDTO.getContent());
+        post.setAuthor(currentUser);
+
+        for (String imgUrl : imgUrls) {
+            CommunityPostImage postImage = new CommunityPostImage();
+            postImage.setImgUrl(imgUrl);
+            postImage.setPost(post);
+            post.getImages().add(postImage);
+        }
 
         try {
             CommunityPost createdPost = communityRepository.save(post);
-            String imgUrl = commonService.uploadFile(multipartFiles);
             return createdPost.getId();
         } catch (DataAccessException e) {
             throw new InternalServerErrorException(ErrorResponseMessage.POST_FAILED);

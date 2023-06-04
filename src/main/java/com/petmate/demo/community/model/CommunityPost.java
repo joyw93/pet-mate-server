@@ -39,4 +39,7 @@ public class CommunityPost {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<CommunityPostComment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<CommunityPostImage> images = new ArrayList<>();
+
 }

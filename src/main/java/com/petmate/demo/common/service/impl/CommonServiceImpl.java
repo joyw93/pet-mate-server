@@ -29,7 +29,7 @@ public class CommonServiceImpl implements CommonService {
     private String bucketPath;
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
     @Override
-    public List<String> uploadFile(MultipartFile[] files) throws IOException {
+    public List<String> uploadFile(List<MultipartFile> files) throws IOException {
         List<String> imgUrls = new ArrayList<String>();
         for (MultipartFile multipartFile : files) {
             if (multipartFile.isEmpty()) {

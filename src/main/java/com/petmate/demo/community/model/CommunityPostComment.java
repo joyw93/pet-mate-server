@@ -1,7 +1,7 @@
 package com.petmate.demo.community.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.petmate.demo.common.model.BaseEntity;
 import com.petmate.demo.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -14,10 +14,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "community_post_comments")
-public class CommunityPostComment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CommunityPostComment extends BaseEntity {
 
     @NotNull
     @Column(name = "content")

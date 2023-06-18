@@ -3,8 +3,10 @@ package com.petmate.demo.user.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.petmate.demo.common.model.BaseEntity;
 import com.petmate.demo.community.model.CommunityPost;
 import com.petmate.demo.community.model.CommunityPostComment;
+import com.petmate.demo.community.model.CommunityPostLike;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,10 +26,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User extends BaseEntity {
     @NotNull
     @Column(name = "name")
     private String name;
@@ -42,9 +41,15 @@ public class User {
     private String password;
     @Column(name = "roles")
     private String roles;
+    @Column(name = "profile_image")
+    private String profileImage;
+    @Column(name = "introduce")
+    private String introduce;
     @JsonBackReference
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<CommunityPost> communityPosts = new ArrayList<>();
     @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL)
     private List<CommunityPostComment> communityPostComments = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<CommunityPostLike> communityPostLikes = new ArrayList<>();
 }

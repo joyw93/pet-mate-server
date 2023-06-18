@@ -20,13 +20,23 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
+    public final com.petmate.demo.common.model.QBaseEntity _super = new com.petmate.demo.common.model.QBaseEntity(this);
+
     public final ListPath<com.petmate.demo.community.model.CommunityPostComment, com.petmate.demo.community.model.QCommunityPostComment> communityPostComments = this.<com.petmate.demo.community.model.CommunityPostComment, com.petmate.demo.community.model.QCommunityPostComment>createList("communityPostComments", com.petmate.demo.community.model.CommunityPostComment.class, com.petmate.demo.community.model.QCommunityPostComment.class, PathInits.DIRECT2);
+
+    public final ListPath<com.petmate.demo.community.model.CommunityPostLike, com.petmate.demo.community.model.QCommunityPostLike> communityPostLikes = this.<com.petmate.demo.community.model.CommunityPostLike, com.petmate.demo.community.model.QCommunityPostLike>createList("communityPostLikes", com.petmate.demo.community.model.CommunityPostLike.class, com.petmate.demo.community.model.QCommunityPostLike.class, PathInits.DIRECT2);
 
     public final ListPath<com.petmate.demo.community.model.CommunityPost, com.petmate.demo.community.model.QCommunityPost> communityPosts = this.<com.petmate.demo.community.model.CommunityPost, com.petmate.demo.community.model.QCommunityPost>createList("communityPosts", com.petmate.demo.community.model.CommunityPost.class, com.petmate.demo.community.model.QCommunityPost.class, PathInits.DIRECT2);
 
+    //inherited
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+
     public final StringPath email = createString("email");
 
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    //inherited
+    public final NumberPath<Long> id = _super.id;
+
+    public final StringPath introduce = createString("introduce");
 
     public final StringPath name = createString("name");
 
@@ -34,7 +44,12 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath password = createString("password");
 
+    public final StringPath profileImage = createString("profileImage");
+
     public final StringPath roles = createString("roles");
+
+    //inherited
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QUser(String variable) {
         super(User.class, forVariable(variable));

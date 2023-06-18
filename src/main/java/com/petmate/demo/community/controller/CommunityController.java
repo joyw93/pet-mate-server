@@ -25,7 +25,15 @@ public class CommunityController {
     private final CommunityService communityService;
 
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponse> createPost(@RequestBody CreatePostDTO createPostDTO) throws IOException {
+    public ResponseEntity<ApiResponse> createPost( @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                                                   @RequestParam(value = "title") String title,
+                                                   @RequestParam(value = "content") String content,
+                                                   @RequestParam(value = "hashtags", required = false) List<String> hashtags) throws IOException {
+        CreatePostDTO createPostDTO = new CreatePostDTO();
+        createPostDTO.setTitle(title);
+        createPostDTO.setContent(content);
+        createPostDTO.setFiles(files);
+        createPostDTO.setHashtags(hashtags);
         Long postId = communityService.createPost(createPostDTO);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.CREATED_SUCCESS, postId));
     }
@@ -58,21 +66,17 @@ public class CommunityController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.CREATED_SUCCESS, commentId));
     }
 
+    @PostMapping("/posts/{postId}/like")
+    public ResponseEntity<ApiResponse> likePost(@PathVariable Long postId) {
+        String result = communityService.likePost(postId);
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.UPDATE_SUCCESS, result));
+    }
+
     @GetMapping("/posts/{postId}")
     public ResponseEntity<ApiResponse> getPost(@PathVariable Long postId) {
         CommunityPostResponseDTO post = communityService.getPost(postId);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_SUCCESS, post));
     }
 
-    @PostMapping("/posts/image")
-    public ResponseEntity<ApiResponse> createPost(@RequestParam("files") MultipartFile[] files,
-                                                   @RequestParam("title") String title,
-                                                   @RequestParam("content") String content) throws IOException {
-        CreatePostDTO createPostDTO = new CreatePostDTO();
-        createPostDTO.setTitle(title);
-        createPostDTO.setContent(content);
-        createPostDTO.setFiles(files);
-        Long postId = communityService.createPost(createPostDTO);
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.CREATED_SUCCESS, postId));
-    }
+
 }

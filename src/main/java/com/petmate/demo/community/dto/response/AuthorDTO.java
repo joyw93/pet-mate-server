@@ -9,5 +9,5 @@ import lombok.*;
 public class AuthorDTO {
     private Long id;
     private String nickname;
-
+    private String profile_image;
 }

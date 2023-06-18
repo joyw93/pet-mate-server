@@ -22,11 +22,20 @@ public class QCommunityPostImage extends EntityPathBase<CommunityPostImage> {
 
     public static final QCommunityPostImage communityPostImage = new QCommunityPostImage("communityPostImage");
 
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    public final com.petmate.demo.common.model.QBaseEntity _super = new com.petmate.demo.common.model.QBaseEntity(this);
+
+    //inherited
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+
+    //inherited
+    public final NumberPath<Long> id = _super.id;
 
     public final StringPath imgUrl = createString("imgUrl");
 
     public final QCommunityPost post;
+
+    //inherited
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QCommunityPostImage(String variable) {
         this(CommunityPostImage.class, forVariable(variable), INITS);

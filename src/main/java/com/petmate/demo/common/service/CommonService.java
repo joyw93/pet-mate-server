@@ -7,5 +7,5 @@ import java.io.File;
 import java.io.IOException;
 
 public interface CommonService {
-    List<String> uploadFile(MultipartFile[] files) throws IOException;
+    List<String> uploadFile(List<MultipartFile> files) throws IOException;
 }

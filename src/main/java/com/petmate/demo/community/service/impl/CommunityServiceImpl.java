@@ -1,27 +1,23 @@
 package com.petmate.demo.community.service.impl;
-import com.amazonaws.services.s3.AmazonS3;
 import com.petmate.demo.common.exception.InternalServerErrorException;
 import com.petmate.demo.common.exception.NotFoundException;
 import com.petmate.demo.common.exception.UnAuthorizedException;
+import com.petmate.demo.common.model.Hashtag;
+import com.petmate.demo.common.repository.HashtagRepository;
+import com.petmate.demo.common.response.ApiResponseMessage;
 import com.petmate.demo.common.response.ErrorResponseMessage;
 import com.petmate.demo.common.service.CommonService;
 import com.petmate.demo.community.dto.request.AddCommentDTO;
 import com.petmate.demo.community.dto.request.CreatePostDTO;
 import com.petmate.demo.community.dto.request.UpdatePostDTO;
 import com.petmate.demo.community.dto.response.*;
-import com.petmate.demo.community.model.CommunityPost;
-import com.petmate.demo.community.model.CommunityPostComment;
-import com.petmate.demo.community.model.CommunityPostImage;
-import com.petmate.demo.community.model.QCommunityPostComment;
+import com.petmate.demo.community.model.*;
+import com.petmate.demo.community.repository.CommunityPostLikeRepository;
 import com.petmate.demo.community.repository.CommunityRepository;
 import com.petmate.demo.community.service.CommunityService;
-import com.petmate.demo.user.model.QUser;
 import com.petmate.demo.user.model.User;
 import com.petmate.demo.utils.SecurityUtil;
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -30,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -41,27 +36,45 @@ public class CommunityServiceImpl implements CommunityService {
 
     private final CommonService commonService;
     private final CommunityRepository communityRepository;
+    private final HashtagRepository hashtagRepository;
+    private final CommunityPostLikeRepository communityPostLikeRepository;
 
 
     @Override
     public Long createPost(CreatePostDTO createPostDTO) throws IOException {
         User currentUser = SecurityUtil.getCurrentUser();
 
-        MultipartFile[] imageFiles = createPostDTO.getFiles();
-        List<String> imgUrls = commonService.uploadFile(imageFiles);
-
         CommunityPost post = new CommunityPost();
         post.setTitle(createPostDTO.getTitle());
         post.setContent(createPostDTO.getContent());
         post.setAuthor(currentUser);
 
-        for (String imgUrl : imgUrls) {
-            CommunityPostImage postImage = new CommunityPostImage();
-            postImage.setImgUrl(imgUrl);
-            postImage.setPost(post);
-            post.getImages().add(postImage);
-        }
+        // 이미지 업로드/등록
+        List<MultipartFile> imageFiles = createPostDTO.getFiles();
+        if (!imageFiles.isEmpty()) {
+            List<String> imgUrls = commonService.uploadFile(imageFiles);
 
+            for (String imgUrl : imgUrls) {
+                CommunityPostImage postImage = new CommunityPostImage();
+                postImage.setImgUrl(imgUrl);
+                postImage.setPost(post);
+
+                post.getImages().add(postImage);
+            }
+        }
+        // 해쉬태그 등록
+        List<String> hashtags = createPostDTO.getHashtags();
+        for (String hashtagKeyword : hashtags) {
+            Hashtag hashtag = hashtagRepository.findByKeyword(hashtagKeyword).orElseGet(Hashtag::new);
+            hashtag.setKeyword(hashtagKeyword);
+            hashtagRepository.save(hashtag);
+
+            CommunityPostHashtag communityPostHashtag = new CommunityPostHashtag();
+            communityPostHashtag.setPost(post);
+            communityPostHashtag.setHashtag(hashtag);
+
+            post.getHashtags().add(communityPostHashtag);
+        }
         try {
             CommunityPost createdPost = communityRepository.save(post);
             return createdPost.getId();
@@ -126,6 +139,27 @@ public class CommunityServiceImpl implements CommunityService {
             throw new InternalServerErrorException(ErrorResponseMessage.POST_FAILED);
         }
     }
+
+    @Override
+    public String likePost(Long postId) {
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        CommunityPostLike currentLike = communityRepository.findLike(currentUserId, postId);
+        CommunityPost post = communityRepository.findById(postId)
+                .orElseThrow(()->new NotFoundException(ErrorResponseMessage.POST_NOT_FOUND));
+
+        if (currentLike == null) {
+            CommunityPostLike newLike = new CommunityPostLike();
+            User currentUser = SecurityUtil.getCurrentUser();
+            newLike.setUser(currentUser);
+            newLike.setPost(post);
+            communityPostLikeRepository.save(newLike);
+            return ApiResponseMessage.LIKE_SUCCESS;
+        } else {
+            communityPostLikeRepository.delete(currentLike);
+            return ApiResponseMessage.UNLIKE_SUCCESS;
+        }
+    }
+
 
     @Override
     public CommunityPostResponseDTO getPost(Long postId) {

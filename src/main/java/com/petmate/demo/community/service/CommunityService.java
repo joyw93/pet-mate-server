@@ -16,5 +16,6 @@ public interface CommunityService {
     CommunityPost updatePost(Long postId, UpdatePostDTO updatePostDTO);
     void deletePost(Long postId);
     Long addComment(Long postId, AddCommentDTO addCommentDTO);
+    String likePost(Long postId);
     CommunityPostResponseDTO getPost(Long postId);
 }

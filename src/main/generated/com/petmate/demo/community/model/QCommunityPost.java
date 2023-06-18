@@ -22,17 +22,32 @@ public class QCommunityPost extends EntityPathBase<CommunityPost> {
 
     public static final QCommunityPost communityPost = new QCommunityPost("communityPost");
 
+    public final com.petmate.demo.common.model.QBaseEntity _super = new com.petmate.demo.common.model.QBaseEntity(this);
+
     public final com.petmate.demo.user.model.QUser author;
 
     public final ListPath<CommunityPostComment, QCommunityPostComment> comments = this.<CommunityPostComment, QCommunityPostComment>createList("comments", CommunityPostComment.class, QCommunityPostComment.class, PathInits.DIRECT2);
 
+    public final ListPath<CommunityPostLike, QCommunityPostLike> communityPostLikes = this.<CommunityPostLike, QCommunityPostLike>createList("communityPostLikes", CommunityPostLike.class, QCommunityPostLike.class, PathInits.DIRECT2);
+
     public final StringPath content = createString("content");
 
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    //inherited
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+
+    public final ListPath<CommunityPostHashtag, QCommunityPostHashtag> hashtags = this.<CommunityPostHashtag, QCommunityPostHashtag>createList("hashtags", CommunityPostHashtag.class, QCommunityPostHashtag.class, PathInits.DIRECT2);
+
+    //inherited
+    public final NumberPath<Long> id = _super.id;
 
     public final ListPath<CommunityPostImage, QCommunityPostImage> images = this.<CommunityPostImage, QCommunityPostImage>createList("images", CommunityPostImage.class, QCommunityPostImage.class, PathInits.DIRECT2);
 
     public final StringPath title = createString("title");
+
+    //inherited
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
+
+    public final NumberPath<Long> views = createNumber("views", Long.class);
 
     public QCommunityPost(String variable) {
         this(CommunityPost.class, forVariable(variable), INITS);
